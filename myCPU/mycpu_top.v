@@ -29,6 +29,7 @@ wire [31:0] ds_pc;
 wire [31:0] seq_pc;
 wire [31:0] nextpc;
 wire        br_taken;
+wire        br_inst;
 wire [31:0] br_target;
 wire [31:0] inst;
 reg  [31:0] pc;
@@ -109,6 +110,37 @@ wire [31:0] alu_result ;
 wire [31:0] mem_result;
 wire [31:0] final_result;
 
+// VALID & ALLOW GENERATION
+wire valid_1; // the valid signal given by stage 1
+wire valid_2; // beq bne b 执行到此为止
+wire valid_3; 
+wire valid_4;
+wire valid_5;
+
+wire allow_1;
+wire allow_2; // branch 类 指令需要阻塞
+wire allow_3;
+wire allow_4;
+wire allow_5;
+
+assign valid_1 = reset;
+assign valid_2 = 1'b1;// later to-do: & valid (current stage instruction signals)
+assign valid_3 = 1'b1;
+assign valid_4 = 1'b1;
+assign valid_5 = 1'b1;
+
+reg stage_2_blockflag; // Blocks Signal Flow from IF to ID if decoding a BRANCH-type instruction
+always @(posedge clk ) begin
+    if (reset) stage_2_blockflag <= 1'b0;
+    if (br_inst) stage_2_blockflag <= ~stage_2_blockflag;
+end
+
+assign allow_1 = 1'b1;
+assign allow_2 = ~br_inst || (br_inst && stage_2_blockflag); // 当前解码 Branch时，忽略Branch紧接下来的一条指令，在下一拍再由Branch决定。
+assign allow_3 = 1'b1;
+assign allow_4 = 1'b1;
+assign allow_5 = 1'b1;
+
 // PC
 assign ds_pc        = pc;
 assign seq_pc       = ds_pc + 3'h4;
@@ -116,7 +148,8 @@ assign nextpc       = br_taken ? br_target : seq_pc;
 
 always @(posedge clk) begin
     if (reset) begin
-        pc <= 32'h1c000000; 
+        //pc <= 32'h1c000000; 
+        pc <= 32'h1bff_fffc;
     end
     else begin
         pc <= nextpc;
@@ -124,7 +157,7 @@ always @(posedge clk) begin
 end
 
 assign inst_sram_we    = 1'b0;
-assign inst_sram_addr  = pc;
+assign inst_sram_addr  = nextpc; //pc; changed for pipeline
 assign inst_sram_wdata = 32'b0;
 assign inst            = inst_sram_rdata;
 
@@ -256,12 +289,14 @@ assign rkd_value = rf_rdata2;
 assign rj_eq_rd = (rj_value == rkd_value);
 
 // BRANCH
+
 assign br_taken = (   inst_beq  &&  rj_eq_rd
                    || inst_bne  && !rj_eq_rd
                    || inst_jirl
                    || inst_bl
                    || inst_b
                   );// && ds_valid; 手动删除
+assign br_inst = inst_beq || inst_bne || inst_bl || inst_b || inst_jirl;
 assign br_target = (inst_beq || inst_bne || inst_bl || inst_b) ? (ds_pc + br_offs) :
                                                    /*inst_jirl*/ (rj_value + jirl_offs);
 
