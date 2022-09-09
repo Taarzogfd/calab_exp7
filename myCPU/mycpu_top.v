@@ -39,7 +39,7 @@ wire        br_taken;
 wire [31:0] br_target;
 
 wire [63:0]  stage_1_to_2;
-instantiation_IF stage_1_IF (
+stage_1_IF instantiation_IF  (
     .clk (clk),
     .valid_1 (valid_1),
     .allow_2 (allow_2),
@@ -61,7 +61,7 @@ wire [ 4:0] rf_raddr1;
 wire [ 4:0] rf_raddr2;
 
 wire [116:0] stage_2_to_3;
-instantiation_ID stage_2_ID (
+stage_2_ID instantiation_ID  (
     .clk (clk),
     .reset (reset),
     .valid_1 (valid_1),
@@ -81,7 +81,7 @@ instantiation_ID stage_2_ID (
 wire [38:0] stage_3_to_4;
 wire [31:0] alu_result;
 
-instantiation_EX stage_3_EX (
+ stage_3_EX instantiation_EX(
     .clk (clk),
     .reset (reset),
     .valid_2 (valid_2),
@@ -99,7 +99,7 @@ instantiation_EX stage_3_EX (
 assign data_sram_addr=alu_result;
 
 wire [69:0] stage_4_to_5;
-instantiation_AM stage_4_AM (
+ stage_4_AM instantiation_AM(
     .clk (clk),
     .reset (reset),
     .valid_3 (valid_3),
@@ -114,7 +114,7 @@ instantiation_AM stage_4_AM (
     .stage_4_to_5 (stage_4_to_5)
 );
 
-instantiation_WB stage_5_WB (
+ stage_5_WB instantiation_WB(
     .clk (clk),
     .reset (reset),
     .valid_4 (valid_4),
