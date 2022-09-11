@@ -105,6 +105,8 @@ assign debug_wb_rf_wdata = soc_lite.debug_wb_rf_wdata;
 integer trace_ref;
 initial begin
     trace_ref = $fopen(`TRACE_REF_FILE, "r");
+    if (trace_ref) $display("Loaded!\n");
+    else $display("Failed to load!\n");
 end
 
 //get reference result in falling edge
