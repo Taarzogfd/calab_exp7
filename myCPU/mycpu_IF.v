@@ -33,8 +33,8 @@ assign nextpc       = br_taken ? br_target : seq_pc;
 
 always @(posedge clk) begin
     if (reset) begin
-        //pc <= 32'h1c000000; 
-        pc <= 32'h1bff_fffc;
+        pc <= 32'h1c000000; 
+        //pc <= 32'h1bff_fffc;
     end
     else begin
         pc <= nextpc;
@@ -42,6 +42,7 @@ always @(posedge clk) begin
 end
 
 assign inst_sram_we    = 1'b0;
+assign inst_sram_en    = 1'b1;
 assign inst_sram_addr  = nextpc; //pc; changed for pipeline
 assign inst_sram_wdata = 32'b0;
 assign inst            = inst_sram_rdata;
