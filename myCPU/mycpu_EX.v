@@ -12,7 +12,7 @@ module stage_3_EX (
 
     output wire [31:0] alu_result,
     output wire [31:0] data_sram_wdata,
-    output wire data_sram_we,
+    output wire [ 3:0] data_sram_we,
     output wire data_sram_en,
 
     output wire [38:0] stage_3_to_4
@@ -41,7 +41,7 @@ assign {rf_we,dest,res_from_mem,alu_src1,alu_src2,alu_op,mem_we,mem_en,pc}=upstr
        // 1 + 5 +   1           + 32      + 32      + 12   +  1  +  1  +32
 
 assign data_sram_wdata=alu_src2;
-assign data_sram_we=mem_we;
+assign data_sram_we={4{mem_we}};
 assign data_sram_en=mem_en;
 
 alu u_alu(

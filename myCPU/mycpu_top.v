@@ -38,6 +38,10 @@ wire allow_5;
 wire        br_taken;
 wire [31:0] br_target;
 
+wire [ 4:0] rf_waddr;
+wire [31:0] rf_wdata;
+
+
 wire [63:0]  stage_1_to_2;
 stage_1_IF instantiation_IF  (
     .clk (clk),
@@ -109,8 +113,6 @@ wire [69:0] stage_4_to_5;
     .stage_3_to_4 (stage_3_to_4),
     .alu_result (alu_result),
     .data_sram_rdata (data_sram_rdata),
-    .data_sram_we (data_sram_we),
-    .data_sram_en (data_sram_en),
     .stage_4_to_5 (stage_4_to_5)
 );
 
@@ -120,7 +122,6 @@ wire [69:0] stage_4_to_5;
     .valid_4 (valid_4),
     .allow_5 (allow_5),
     .stage_4_to_5 (stage_4_to_5),
-    .alu_result (alu_result),
     .rf_we (rf_we),
     .rf_waddr (rf_waddr),
     .rf_wdata (rf_wdata),
