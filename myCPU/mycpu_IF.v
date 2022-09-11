@@ -18,7 +18,7 @@ module stage_1_IF(
     input  wire [31:0] inst_sram_rdata
 );
 
-assign valid_1 = reset;
+assign valid_1 = ~reset;
 
 wire [31:0] ds_pc;
 wire [31:0] seq_pc;

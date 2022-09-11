@@ -41,6 +41,7 @@ wire [31:0] br_target;
 wire [ 4:0] rf_waddr;
 wire [31:0] rf_wdata;
 
+wire rf_we;
 
 wire [63:0]  stage_1_to_2;
 stage_1_IF instantiation_IF  (
