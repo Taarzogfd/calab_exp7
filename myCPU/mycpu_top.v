@@ -66,6 +66,7 @@ wire [ 4:0] rf_raddr1;
 wire [ 4:0] rf_raddr2;
 
 wire [116:0] stage_2_to_3;
+wire [31:0]  memory_write_data;
 stage_2_ID instantiation_ID  (
     .clk (clk),
     .reset (reset),
@@ -77,6 +78,7 @@ stage_2_ID instantiation_ID  (
     .br_taken (br_taken),
     .br_target (br_target),
     .stage_2_to_3 (stage_2_to_3),
+    .memory_write_data (memory_write_data),
     .rf_raddr1 (rf_raddr1),
     .rf_raddr2 (rf_raddr2),
     .rf_rdata1 (rf_rdata1),
@@ -94,6 +96,7 @@ wire [31:0] alu_result;
     .allow_3 (allow_3),
     .allow_4 (allow_4),
     .stage_2_to_3 (stage_2_to_3),
+    .memory_write_data (memory_write_data),
     .alu_result (alu_result),
     .data_sram_wdata (data_sram_wdata),
     .data_sram_we (data_sram_we),

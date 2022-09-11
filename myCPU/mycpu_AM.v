@@ -5,7 +5,7 @@ module stage_4_AM (
     // valid / allow
     input  wire valid_3,
     output wire allow_4,
-    output wire valid_4,
+    output reg  valid_4,
     input  wire allow_5,
 
     input wire [38:0]  stage_3_to_4,
@@ -16,7 +16,11 @@ module stage_4_AM (
 
 wire [31:0] pc;
 
-assign valid_4=1'b1;
+always @(posedge clk ) begin
+    if (reset) valid_4<=1'b1;
+    else valid_4<=valid_3;
+end
+
 assign allow_4=1'b1;
 
 wire res_from_mem;

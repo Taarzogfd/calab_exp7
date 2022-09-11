@@ -8,11 +8,12 @@ module stage_2_ID (
     output wire valid_2,
     input  wire allow_3,
 
-    input wire [63:0] stage_1_to_2,
-    output  wire        br_taken,
-    output  wire [31:0] br_target,
+    input  wire [63:0] stage_1_to_2,
+    output wire        br_taken,
+    output wire [31:0] br_target,
 
     output wire [116:0] stage_2_to_3,
+    output wire [31:0]  memory_write_data,
     
     input  wire [31:0] rf_rdata1,
     input  wire [31:0] rf_rdata2,
@@ -21,15 +22,27 @@ module stage_2_ID (
 
 );
 
-assign valid_2=1'b1;
+//assign valid_2=1'b1;
 
-reg stage_2_blockflag; // Blocks Signal Flow from IF to ID if decoding a BRANCH-type instruction
+/*reg stage_2_blockflag; // Blocks Signal Flow from IF to ID if decoding a BRANCH-type instruction
 always @(posedge clk ) begin
     if (reset) stage_2_blockflag <= 1'b0;
     else if (br_inst) stage_2_blockflag <= ~stage_2_blockflag;
 end
 
 assign allow_2 = ~br_inst || (br_inst && stage_2_blockflag); // 当前解码 Branch时，忽略Branch紧接下来的一条指令，在下一拍再由Branch决定。
+*/
+
+assign allow_2=1'b1;
+
+reg next_valid; //如果当前指令是分支，那么下一拍invalid
+assign valid_2=next_valid;
+always @(posedge clk) begin
+    if (reset) next_valid<=1'b1;
+    else if (br_taken && next_valid) next_valid<=1'b0;
+    else if (~next_valid) next_valid<=valid_1;
+end
+
 
 reg [63:0] upstream_input;
 
@@ -241,7 +254,7 @@ assign br_taken = (   inst_beq  &&  rj_eq_rd
                    || inst_jirl
                    || inst_bl
                    || inst_b
-                  );// && ds_valid; 手动删除
+                  )&& valid_2;// && ds_valid; 手动删除
 assign br_inst = inst_beq || inst_bne || inst_bl || inst_b || inst_jirl;
 assign br_target = (inst_beq || inst_bne || inst_bl || inst_b) ? (pc + br_offs) :
                                                    /*inst_jirl*/ (rj_value + jirl_offs);
@@ -253,5 +266,6 @@ assign alu_src2 = src2_is_imm ? imm : rkd_value;
 
 assign stage_2_to_3={rf_we,dest,res_from_mem,alu_src1,alu_src2,alu_op,mem_we,mem_en,pc};
                     // 1 +  5  +  1             +32      + 32      + 12   +  1  +  1    +32
+assign memory_write_data=rkd_value;
 
 endmodule
